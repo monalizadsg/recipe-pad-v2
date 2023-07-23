@@ -10,11 +10,13 @@ import {
   Button,
   HStack,
   Link,
+  // FormHelperText,
 } from "@chakra-ui/react";
 import loginPortrait from "../assets/login_food_portrait.jpg";
 import PasswordInput from "../components/PasswordInput";
 import TextInput from "../components/TextInput";
-import { userData } from "../data/User";
+// import { userData } from "../data/User";
+import { register } from "./authService";
 
 import { useNavigate } from "react-router-dom";
 
@@ -25,19 +27,42 @@ function SignUp() {
     email: "",
     password: "",
   });
+  // const [error, setError] = useState();
   const navigate = useNavigate();
 
   const handleInputChange = (event) => {
-    console.log(event.target.value);
     const { name, value } = event.target;
     setUser({ ...user, [name]: value });
   };
 
-  const handleSubmit = (event) => {
+  // const handleSubmit = (event) => {
+  //   event.preventDefault();
+  //   // TODO: update authentication
+  //   userData.push(user);
+  //   navigate("/recipes");
+  // };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    const { firstName, lastName, email, password } = user;
+
+    console.log({ user });
     // TODO: update authentication
-    userData.push(user);
-    navigate("/recipes");
+    try {
+      const result = await register(firstName, lastName, email, password);
+      // setIsLoading(false);
+      console.log({ result });
+      // navigate("/login");
+    } catch (err) {
+      console.log(err.message);
+      if (err.result.data) {
+        console.log(err.result.data);
+      }
+      //  setIsLoading(false);
+    }
+    // userData.push(user);
+    // console.log({ userData });
+    // navigate("/recipes");
   };
 
   return (
@@ -84,6 +109,9 @@ function SignUp() {
                     isRequired
                   />
                   <PasswordInput onChange={handleInputChange} />
+                  {/* {error && (
+                    <FormHelperText color='red'>{error}</FormHelperText>
+                  )} */}
                 </VStack>
                 <Button
                   bgColor='#FE7071'

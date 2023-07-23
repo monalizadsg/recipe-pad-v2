@@ -12,8 +12,9 @@ import {
 import loginPortrait from "../assets/login_food_portrait.jpg";
 import PasswordInput from "../components/PasswordInput";
 import TextInput from "../components/TextInput";
-import { userData } from "../data/User";
+// import { userData } from "../data/User";
 import { useNavigate } from "react-router-dom";
+import { login } from "./authService";
 
 function Login() {
   const [user, setUser] = useState({ email: "", password: "" });
@@ -23,12 +24,20 @@ function Login() {
   };
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     // TODO: update authentication
-    userData.push(user);
-    console.log({ userData });
-    navigate("/recipes");
+    try {
+      await login(user);
+      // setIsLoading(false);
+      navigate("/recipes");
+    } catch (e) {
+      console.log(e.message);
+      //  setIsLoading(false);
+    }
+    // userData.push(user);
+    // console.log({ userData });
+    // navigate("/recipes");
   };
 
   return (

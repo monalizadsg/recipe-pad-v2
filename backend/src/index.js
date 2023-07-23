@@ -7,6 +7,7 @@ import { userRouter } from "../routes/users.js";
 const app = express();
 
 // middleware
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
