@@ -1,12 +1,17 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
+import bodyParser from "body-parser";
+import { userRouter } from "../routes/users.js";
 
 const app = express();
 
 // middleware
-app.use(express.json());
+app.use(bodyParser.json());
 app.use(cors());
+
+// router
+app.use("/auth", userRouter);
 
 // connect to db
 mongoose.connect(
