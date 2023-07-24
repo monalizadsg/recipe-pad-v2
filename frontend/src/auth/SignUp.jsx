@@ -10,13 +10,12 @@ import {
   Button,
   HStack,
   Link,
-  // FormHelperText,
 } from "@chakra-ui/react";
 import loginPortrait from "../assets/login_food_portrait.jpg";
 import PasswordInput from "../components/PasswordInput";
 import TextInput from "../components/TextInput";
-// import { userData } from "../data/User";
 import { register } from "./authService";
+import { CustomToast } from "../commons/utils";
 
 import { useNavigate } from "react-router-dom";
 
@@ -27,42 +26,34 @@ function SignUp() {
     email: "",
     password: "",
   });
-  // const [error, setError] = useState();
+  const [errors, setErrors] = useState();
   const navigate = useNavigate();
+  const { addToast } = CustomToast();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setUser({ ...user, [name]: value });
   };
 
-  // const handleSubmit = (event) => {
-  //   event.preventDefault();
-  //   // TODO: update authentication
-  //   userData.push(user);
-  //   navigate("/recipes");
-  // };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     const { firstName, lastName, email, password } = user;
-
-    console.log({ user });
     // TODO: update authentication
     try {
       const result = await register(firstName, lastName, email, password);
-      // setIsLoading(false);
-      console.log({ result });
-      // navigate("/login");
-    } catch (err) {
-      console.log(err.message);
-      if (err.result.data) {
-        console.log(err.result.data);
+      if (result.status === 201) {
+        addToast({
+          title: "Account created!",
+          message: "Redirecting to login page...",
+          type: "success",
+        });
+        setTimeout(navigate("/login"), 4000);
       }
-      //  setIsLoading(false);
+    } catch (err) {
+      if (err && err.response.status === 400) {
+        setErrors({ email: err.response.data.message });
+      }
     }
-    // userData.push(user);
-    // console.log({ userData });
-    // navigate("/recipes");
   };
 
   return (
@@ -109,9 +100,11 @@ function SignUp() {
                     isRequired
                   />
                   <PasswordInput onChange={handleInputChange} />
-                  {/* {error && (
-                    <FormHelperText color='red'>{error}</FormHelperText>
-                  )} */}
+                  {errors && (
+                    <Text style={{ color: "red", fontWeight: 600 }}>
+                      {errors.email}
+                    </Text>
+                  )}
                 </VStack>
                 <Button
                   bgColor='#FE7071'

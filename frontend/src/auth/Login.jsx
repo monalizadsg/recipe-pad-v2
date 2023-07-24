@@ -12,7 +12,6 @@ import {
 import loginPortrait from "../assets/login_food_portrait.jpg";
 import PasswordInput from "../components/PasswordInput";
 import TextInput from "../components/TextInput";
-// import { userData } from "../data/User";
 import { useNavigate } from "react-router-dom";
 import { login } from "./authService";
 
@@ -29,19 +28,14 @@ function Login() {
     // TODO: update authentication
     try {
       await login(user);
-      // setIsLoading(false);
       navigate("/recipes");
     } catch (e) {
       console.log(e.message);
-      //  setIsLoading(false);
     }
-    // userData.push(user);
-    // console.log({ userData });
-    // navigate("/recipes");
   };
 
   return (
-    <Flex w='100%' h='100vh'>
+    <Flex w='100%' h='100vh' flexDir='row-reverse'>
       <Image w='50%' objectFit='cover' src={loginPortrait} />
       <Flex w='50%' alignItems='center' justifyContent='center'>
         <Box w='60%' borderWidth='1px' p={8} borderRadius={10} boxShadow='xs'>

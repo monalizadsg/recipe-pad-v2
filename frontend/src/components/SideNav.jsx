@@ -1,11 +1,13 @@
 import { Flex, Image, List, ListItem, Text } from "@chakra-ui/react";
+import { NavLink, useNavigate } from "react-router-dom";
 import recipe from "../assets/recipes_nav_icon.png";
 import favorite from "../assets/favorite_nav_icon.png";
 import myRecipe from "../assets/my_recipe_nav_icon.png";
 import food from "../assets/salad_icon.png";
-import logout from "../assets/logout.png";
-import { NavLink } from "react-router-dom";
+import logoutImg from "../assets/logout.png";
+import { logout } from "../auth/authService";
 import Logo from "./Logo";
+import { useEffect, useState } from "react";
 
 const menu = [
   {
@@ -26,6 +28,19 @@ const menu = [
 ];
 
 function SideNav() {
+  const [username, setUsername] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const name = localStorage.getItem("fullName");
+    setUsername(name);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <Flex
       flexDir='column'
@@ -82,12 +97,19 @@ function SideNav() {
         <Flex flexDir='column' alignItems='center' mt='40px'>
           <Text fontSize='lg'>Welcome,</Text>
           <Text as='b' fontSize='lg'>
-            Your Name
+            {username}
           </Text>
         </Flex>
-        <Flex justifyContent='start' alignItems='center' gap={2} mb={3}>
-          <Image src={logout} h='20px' w='20px' />
-          <Text>Logout</Text>
+        <Flex
+          justifyContent='start'
+          alignItems='center'
+          gap={2}
+          mb={3}
+          onClick={handleLogout}
+          cursor='pointer'
+        >
+          <Image src={logoutImg} h='20px' w='20px' />
+          <Text _hover={{ fontWeight: 700 }}>Logout</Text>
         </Flex>
       </Flex>
     </Flex>
