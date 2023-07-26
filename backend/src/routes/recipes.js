@@ -131,7 +131,7 @@ router.put("/favorites", async (req, res) => {
     await user.save();
     res.status(200).json({ favoriteRecipes: user.favoriteRecipes });
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json({ error });
   }
 });
 
@@ -163,7 +163,7 @@ router.delete("/favorites/:userId", async (req, res) => {
     // return the updated array
     res.status(200).json({ favoriteRecipes: user.favoriteRecipes });
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json({ error });
   }
 });
 
@@ -215,12 +215,11 @@ router.post("/:recipeId/reviews", async (req, res) => {
     await recipe.save();
     return res.json({ recipe });
   } catch (error) {
-    return res.status(500).json(error);
+    return res.status(500).json({ error });
   }
 });
 
 // get recipe reviews
-
 router.get("/:recipeId/reviews", async (req, res) => {
   const recipeId = req.params.recipeId;
 
@@ -237,7 +236,7 @@ router.get("/:recipeId/reviews", async (req, res) => {
     const reviews = recipe.reviews;
     res.status(200).json({ reviews });
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json({ error });
   }
 });
 
@@ -283,10 +282,58 @@ router.put("/:recipeId/reviews/:reviewId", async (req, res) => {
     // Save the updated recipe
     await recipe.save();
 
-    // Return the updated recipe with the edited review
+    // Return the updated recipe
     res.status(200).json({ recipe });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error });
+  }
+});
+
+// Delete recipe review
+router.delete("/:recipeId/reviews/:reviewId", async (req, res) => {
+  const recipeId = req.params.recipeId;
+  const reviewId = req.params.reviewId;
+
+  try {
+    // Find the recipe by its ID
+    const recipe = await RecipeModel.findById(recipeId);
+
+    // Check if the recipe exists
+    if (!recipe) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+
+    // Find the index of the review within the recipe's reviews array
+    const reviewIndex = recipe.reviews.findIndex(
+      (review) => review._id.toString() === reviewId
+    );
+
+    // Check if the review exists in the recipe's reviews array
+    if (reviewIndex === -1) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    // Check if the requester is the owner of the review
+    const reviewerId = req.body.reviewer;
+    if (recipe.reviews[reviewIndex].reviewer.toString() !== reviewerId) {
+      return res
+        .status(403)
+        .json({ error: "You are not allowed to delete this review" });
+    }
+
+    // Remove the review from the recipe's reviews array
+    recipe.reviews.splice(reviewIndex, 1);
+
+    // Recalculate the overallRating for the recipe
+    recipe.overallRating = calculateRatings(recipe.reviews);
+
+    // Save the updated recipe
+    await recipe.save();
+
+    // Return the updated recipe
+    res.status(200).json({ recipe });
+  } catch (error) {
+    res.status(500).json({ error });
   }
 });
 
