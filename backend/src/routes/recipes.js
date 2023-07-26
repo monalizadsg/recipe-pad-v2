@@ -14,6 +14,17 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Get user recipes
+router.get("/user-recipes/:userId", async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const userRecipes = await RecipeModel.find({ userOwner: userId });
+    res.status(200).json({ userRecipes });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
 // create new recipe
 router.post("/", async (req, res) => {
   console.log(req.body);
@@ -117,6 +128,38 @@ router.put("/favorites", async (req, res) => {
   try {
     user.favoriteRecipes.push(recipe);
     await user.save();
+    res.status(200).json({ favoriteRecipes: user.favoriteRecipes });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+// get favorite recipes
+router.get("/favorites/:userId", async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.params.userId);
+    const favRecipes = await RecipeModel.find({
+      _id: { $in: user.favoriteRecipes },
+    });
+    res.status(200).json({ favoriteRecipes: favRecipes });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+// remove favorite recipe
+router.delete("/favorites/:userId", async (req, res) => {
+  const { recipeId } = req.body;
+
+  try {
+    const user = await UserModel.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    // remove recipe from the favoriteRecipes array
+    user.favoriteRecipes.pull(recipeId);
+    await user.save();
+    // return the updated array
     res.status(200).json({ favoriteRecipes: user.favoriteRecipes });
   } catch (error) {
     res.status(500).json(error);
