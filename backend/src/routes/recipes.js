@@ -1,6 +1,7 @@
 import express from "express";
 import { RecipeModel } from "../model/Recipes.js";
 import { UserModel } from "../model/Users.js";
+import calculateRatings from "../utils/calculateRatings.js";
 
 const router = express.Router();
 
@@ -163,6 +164,129 @@ router.delete("/favorites/:userId", async (req, res) => {
     res.status(200).json({ favoriteRecipes: user.favoriteRecipes });
   } catch (error) {
     res.status(500).json(error);
+  }
+});
+
+// add a review for a recipe
+router.post("/:recipeId/reviews", async (req, res) => {
+  const recipeId = req.params.recipeId;
+  const { reviewer, comment, rating } = req.body;
+
+  try {
+    // Validate the review data
+    if (!reviewer || !rating) {
+      return res
+        .status(400)
+        .json({ error: "Reviewer, and rating are required fields" });
+    }
+
+    if (typeof rating !== "number" || rating < 1 || rating > 5) {
+      return res
+        .status(400)
+        .json({ error: "Rating must be a number between 1 and 5" });
+    }
+
+    // Check if the recipe exists
+    const recipe = await RecipeModel.findById(recipeId);
+    if (!recipe) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+
+    // Check if the reviewer is the owner of the recipe
+    if (recipe.userOwner.toString() === reviewer) {
+      return res
+        .status(400)
+        .json({ error: "You cannot review your own recipe" });
+    }
+
+    // Create the review object
+    const newReview = {
+      reviewer: reviewer,
+      comment: comment,
+      rating: rating,
+    };
+    // Add the review to the recipe's reviews array
+    recipe.reviews.push(newReview);
+
+    // Calculate the new overallRating
+    recipe.overallRating = calculateRatings(recipe.reviews);
+
+    // save updated recipe
+    await recipe.save();
+    return res.json({ recipe });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+});
+
+// get recipe reviews
+
+router.get("/:recipeId/reviews", async (req, res) => {
+  const recipeId = req.params.recipeId;
+
+  try {
+    // Find the recipe by its ID
+    const recipe = await RecipeModel.findById(recipeId);
+
+    // Check if the recipe exists
+    if (!recipe) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+
+    // Return the reviews for the recipe
+    const reviews = recipe.reviews;
+    res.status(200).json({ reviews });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+// Edit recipe review
+router.put("/:recipeId/reviews/:reviewId", async (req, res) => {
+  const recipeId = req.params.recipeId;
+  const reviewId = req.params.reviewId;
+  const { reviewer, comment, rating } = req.body;
+
+  try {
+    // Find the recipe by its ID
+    const recipe = await RecipeModel.findById(recipeId);
+
+    // Check if the recipe exists
+    if (!recipe) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+
+    // Find the review within the recipe's reviews array
+    const reviewIndex = recipe.reviews.findIndex(
+      (review) => review._id.toString() === reviewId
+    );
+
+    // Check if the review exists in the recipe's reviews array
+    if (reviewIndex === -1) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    // Check if the reviewer is the owner of the review
+    if (recipe.reviews[reviewIndex].reviewer.toString() !== reviewer) {
+      return res
+        .status(403)
+        .json({ error: "You are not allowed to edit this review" });
+    }
+
+    // Update the review comment and rating
+    recipe.reviews[reviewIndex].comment = comment;
+    recipe.reviews[reviewIndex].rating = rating;
+
+    // Recalculate the overallRating for the recipe
+    recipe.overallRating = calculateRatings(recipe.reviews);
+
+    // Save the updated recipe
+    await recipe.save();
+
+    // Return the updated recipe with the edited review
+    res.status(200).json({ recipe });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
   }
 });
 
