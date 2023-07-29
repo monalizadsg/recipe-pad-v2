@@ -1,9 +1,18 @@
 import express from "express";
+import bodyParser from "body-parser";
+import multer from "multer";
 import { RecipeModel } from "../model/Recipes.js";
 import { UserModel } from "../model/Users.js";
 import calculateRatings from "../utils/calculateRatings.js";
+import { uploadFileAndGetURL } from "../cloudinary/index.js";
 
 const router = express.Router();
+
+router.use(bodyParser.json());
+
+const uploader = multer({
+  dest: "uploads/",
+});
 
 // get all recipes
 router.get("/", async (req, res) => {
@@ -27,53 +36,25 @@ router.get("/user-recipes/:userId", async (req, res) => {
 });
 
 // create new recipe
-router.post("/", async (req, res) => {
-  console.log(req.body);
+router.post("/", uploader.single("file"), async (req, res) => {
   const { name, description, ingredients, instructions, userOwner } = req.body;
-  // TODO: update imgUrl
-  const imgUrl = "https://source.unsplash.com/kcA-c3f_3FE";
-
-  // generate unique id
-  // let generatedRecipeId;
-  // let unique = false;
-
-  // while (!unique) {
-  //   // Generate a random number as the userId
-  //   generatedRecipeId = generateRandomNumber(1, 99999); // Modify the range as needed
-
-  //   // Check if the userId already exists in the collection
-  //   const existingRecipe = await RecipeModel.findOne({
-  //     id: generatedRecipeId,
-  //   });
-
-  //   if (!existingRecipe) {
-  //     // If the userId is unique, exit the loop
-  //     unique = true;
-  //   }
-  // }
-
-  // TODO: figure out how to add overallRating
-  let overallRating = null;
+  const imgUrl = await uploadFileAndGetURL(req.file.path);
 
   try {
     const newRecipe = new RecipeModel({
-      // id: generatedRecipeId,
       name,
       description,
       imgUrl,
       ingredients,
       instructions,
-      overallRating,
+      overallRating: null,
       userOwner,
-      // ownerID, // TODO: add ownerID
     });
 
     const recipe = await newRecipe.save();
-    console.log(newRecipe);
     res.status(201).json(recipe);
   } catch (error) {
     res.status(500).json({ message: "Error saving recipe to the database." });
-    console.log(error);
   }
 });
 
