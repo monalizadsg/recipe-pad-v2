@@ -28,33 +28,10 @@ router.get("/", async (req, res) => {
 router.get("/user-recipes/:userId", async (req, res) => {
   const userId = req.params.userId;
   try {
-    const userRecipes = await RecipeModel.find({ userOwner: userId });
+    const userRecipes = await RecipeModel.find({ recipeOwnerId: userId });
     res.status(200).json({ userRecipes });
   } catch (error) {
     res.status(500).json(error);
-  }
-});
-
-// create new recipe
-router.post("/", uploader.single("file"), async (req, res) => {
-  const { name, description, ingredients, instructions, userOwner } = req.body;
-  const imgUrl = await uploadFileAndGetURL(req.file.path);
-
-  try {
-    const newRecipe = new RecipeModel({
-      name,
-      description,
-      imgUrl,
-      ingredients,
-      instructions,
-      overallRating: null,
-      userOwner,
-    });
-
-    const recipe = await newRecipe.save();
-    res.status(201).json(recipe);
-  } catch (error) {
-    res.status(500).json({ message: "Error saving recipe to the database." });
   }
 });
 
@@ -69,9 +46,37 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// create new recipe
+router.post("/", uploader.single("file"), async (req, res) => {
+  const { name, description, ingredients, instructions, ownerId } = req.body;
+  const imgUrl = await uploadFileAndGetURL(req.file.path);
+
+  try {
+    const newRecipe = new RecipeModel({
+      name,
+      description,
+      imgUrl,
+      ingredients,
+      instructions,
+      overallRating: null,
+      recipeOwnerId: ownerId,
+    });
+
+    const recipe = await newRecipe.save();
+    res.status(201).json(recipe);
+  } catch (error) {
+    res.status(500).json({ message: "Error saving recipe to the database." });
+  }
+});
+
 // edit recipe
-router.put("/", async (req, res) => {
-  const { id, name, description, imgUrl, ingredients, instructions } = req.body;
+router.put("/", uploader.single("file"), async (req, res) => {
+  const { id, name, description, ingredients, instructions } = req.body;
+  let imgUrl = req.body.imgFile;
+
+  if (!imgUrl) {
+    imgUrl = await uploadFileAndGetURL(req.file.path);
+  }
 
   try {
     const result = await RecipeModel.findByIdAndUpdate(
@@ -151,11 +156,11 @@ router.delete("/favorites/:userId", async (req, res) => {
 // add a review for a recipe
 router.post("/:recipeId/reviews", async (req, res) => {
   const recipeId = req.params.recipeId;
-  const { reviewer, comment, rating } = req.body;
+  const { reviewerId, comment, rating } = req.body;
 
   try {
     // Validate the review data
-    if (!reviewer || !rating) {
+    if (!reviewerId || !rating) {
       return res
         .status(400)
         .json({ error: "Reviewer, and rating are required fields" });
@@ -174,7 +179,7 @@ router.post("/:recipeId/reviews", async (req, res) => {
     }
 
     // Check if the reviewer is the owner of the recipe
-    if (recipe.userOwner.toString() === reviewer) {
+    if (recipe.recipeOwnerId.toString() === reviewerId) {
       return res
         .status(400)
         .json({ error: "You cannot review your own recipe" });
@@ -182,7 +187,7 @@ router.post("/:recipeId/reviews", async (req, res) => {
 
     // Create the review object
     const newReview = {
-      reviewer: reviewer,
+      reviewerId: reviewerId,
       comment: comment,
       rating: rating,
     };
