@@ -41,7 +41,7 @@ function UserRecipes({ data, isUserRecipe }) {
             {isUserRecipe && <AddRecipeCard />}
             {filteredRecipes.map((item) => (
               <GridItem key={item.id}>
-                <RecipeCard name={item.name} imgUrl={item.imgSrc} />
+                <RecipeCard name={item.name} imgUrl={item.imgUrl} />
               </GridItem>
             ))}
           </Grid>

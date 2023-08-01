@@ -6,7 +6,7 @@ const favRecipesMockupData = [
   {
     id: 1,
     name: "Gyoza",
-    imgSrc: "https://source.unsplash.com/kcA-c3f_3FE",
+    imgUrl: "https://source.unsplash.com/kcA-c3f_3FE",
     description: "This is a description.",
     ingredients: ["cabbage, meat, onion, garlic, salt, pepper"],
     instructions: ["Mixed all ingredients. Wrap. Cook."],
@@ -14,7 +14,7 @@ const favRecipesMockupData = [
   {
     id: 2,
     name: "Gyoza bb",
-    imgSrc: "https://source.unsplash.com/kcA-c3f_3FE",
+    imgUrl: "https://source.unsplash.com/kcA-c3f_3FE",
     description: "This is a description.",
     ingredients: ["cabbage, meat, onion, garlic, salt, pepper"],
     instructions: ["Mixed all ingredients. Wrap. Cook."],
@@ -22,7 +22,7 @@ const favRecipesMockupData = [
   {
     id: 3,
     name: "Gyoza bb",
-    imgSrc: "https://source.unsplash.com/kcA-c3f_3FE",
+    imgUrl: "https://source.unsplash.com/kcA-c3f_3FE",
     description: "This is a description.",
     ingredients: ["cabbage, meat, onion, garlic, salt, pepper"],
     instructions: ["Mixed all ingredients. Wrap. Cook."],
