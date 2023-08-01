@@ -19,6 +19,7 @@ export const login = async ({ email, password }) => {
     `${result.data.firstName} ${result.data.lastName}`
   );
   localStorage.setItem("email", result.data.email);
+  localStorage.setItem("id", result.data.id);
 };
 
 export const logout = () => {
