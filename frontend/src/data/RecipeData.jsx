@@ -50,7 +50,7 @@ export const userRecipeMockData = [
   {
     id: 1,
     name: "Gyoza aa",
-    imgSrc: "https://source.unsplash.com/kcA-c3f_3FE",
+    imgUrl: "https://source.unsplash.com/kcA-c3f_3FE",
     description: "This is a description.",
     ingredients: ["cabbage, meat, onion, garlic, salt, pepper"],
     instructions: ["Mixed all ingredients. Wrap. Cook."],
@@ -58,7 +58,7 @@ export const userRecipeMockData = [
   {
     id: 2,
     name: "Gyoza aa",
-    imgSrc: "https://source.unsplash.com/kcA-c3f_3FE",
+    imgUrl: "https://source.unsplash.com/kcA-c3f_3FE",
     description: "This is a description.",
     ingredients: ["cabbage, meat, onion, garlic, salt, pepper"],
     instructions: ["Mixed all ingredients. Wrap. Cook."],
@@ -66,7 +66,7 @@ export const userRecipeMockData = [
   {
     id: 3,
     name: "Gyoza bb",
-    imgSrc: "https://source.unsplash.com/kcA-c3f_3FE",
+    imgUrl: "https://source.unsplash.com/kcA-c3f_3FE",
     description: "This is a description.",
     ingredients: ["cabbage, meat, onion, garlic, salt, pepper"],
     instructions: ["Mixed all ingredients. Wrap. Cook."],
@@ -74,7 +74,7 @@ export const userRecipeMockData = [
   {
     id: 4,
     name: "Gyoza bb",
-    imgSrc: "https://source.unsplash.com/kcA-c3f_3FE",
+    imgUrl: "https://source.unsplash.com/kcA-c3f_3FE",
     description: "This is a description.",
     ingredients: ["cabbage, meat, onion, garlic, salt, pepper"],
     instructions: ["Mixed all ingredients. Wrap. Cook."],
@@ -82,7 +82,7 @@ export const userRecipeMockData = [
   {
     id: 5,
     name: "Gyoza cc",
-    imgSrc: "https://source.unsplash.com/kcA-c3f_3FE",
+    imgUrl: "https://source.unsplash.com/kcA-c3f_3FE",
     description: "This is a description.",
     ingredients: ["cabbage, meat, onion, garlic, salt, pepper"],
     instructions: ["Mixed all ingredients. Wrap. Cook."],
@@ -90,7 +90,7 @@ export const userRecipeMockData = [
   {
     id: 6,
     name: "Gyoza cc",
-    imgSrc: "https://source.unsplash.com/kcA-c3f_3FE",
+    imgUrl: "https://source.unsplash.com/kcA-c3f_3FE",
     description: "This is a description.",
     ingredients: ["cabbage, meat, onion, garlic, salt, pepper"],
     instructions: ["Mixed all ingredients. Wrap. Cook."],

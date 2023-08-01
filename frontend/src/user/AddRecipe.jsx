@@ -12,6 +12,9 @@ import {
 } from "@chakra-ui/react";
 import ImageUploader from "../components/ImageUploader";
 import BackButton from "../components/BackButton";
+import { addRecipe } from "./RecipesService";
+import { CustomToast, getCurrentUserId } from "../commons/utils";
+import { useNavigate } from "react-router-dom";
 
 function AddRecipe() {
   const [recipeData, setRecipeData] = useState({
@@ -21,9 +24,10 @@ function AddRecipe() {
     ingredients: "",
     instructions: "",
   });
-  const [image, setImage] = useState([]);
-
-  console.log({ image });
+  const [image, setImage] = useState(null);
+  const ownerId = getCurrentUserId();
+  const navigate = useNavigate();
+  const { addToast } = CustomToast();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,15 +35,28 @@ function AddRecipe() {
   };
 
   const handleImageChange = (imageFile) => {
-    // data for submit
-    console.log(imageFile);
     setImage(imageFile);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // TODO: handle the recipe submission here
-    console.log(recipeData);
+    const recipe = {
+      name: recipeData.title,
+      description: recipeData.description,
+      imgFile: image,
+      ingredients: recipeData.ingredients,
+      instructions: recipeData.instructions,
+      ownerId: ownerId,
+    };
+    const result = await addRecipe(recipe);
+    if (result.status === 201) {
+      addToast({
+        title: "Recipe created!",
+        type: "success",
+      });
+      setTimeout(navigate("/my-recipes"), 4000);
+    }
   };
 
   return (
