@@ -2,13 +2,12 @@ import { useState, useEffect } from "react";
 import { Grid, GridItem, Flex } from "@chakra-ui/react";
 import RecipeCard from "../components/RecipeCard";
 // import { useNavigate } from "react-router-dom";
-import ScrollContainer from "../components/ScrollContainer";
 import SearchBar from "../components/SearchBar";
 import { useDebounce } from "use-debounce";
 import AddRecipeCard from "./AddRecipeCard";
 import RecipeNotFound from "../components/RecipeNotFound";
 
-function UserRecipes({ data, isUserRecipe }) {
+function UserRecipes({ data, isUserRecipe, pathName }) {
   const [recipes, setRecipes] = useState(data);
   const [inputValue, setInputValue] = useState("");
   const [filteredRecipes, setFilteredRecipes] = useState([]);
@@ -32,23 +31,27 @@ function UserRecipes({ data, isUserRecipe }) {
 
   return (
     <>
-      <ScrollContainer>
-        <Flex justifyContent='center' mb={3}>
-          <SearchBar handleSearch={handleSearch} />
-        </Flex>
-        {filteredRecipes.length > 0 ? (
-          <Grid templateColumns='repeat(4, 1fr)' gap={10} w='100%'>
-            {isUserRecipe && <AddRecipeCard />}
-            {filteredRecipes.map((item) => (
-              <GridItem key={item.id}>
-                <RecipeCard name={item.name} imgUrl={item.imgUrl} />
-              </GridItem>
-            ))}
-          </Grid>
-        ) : (
-          <RecipeNotFound />
-        )}
-      </ScrollContainer>
+      <Flex justifyContent='center' mb={3}>
+        <SearchBar handleSearch={handleSearch} />
+      </Flex>
+      {filteredRecipes.length > 0 ? (
+        <Grid templateColumns='repeat(4, 1fr)' gap={10} w='100%'>
+          {isUserRecipe && <AddRecipeCard />}
+          {filteredRecipes.map((item) => (
+            <GridItem key={item._id}>
+              <RecipeCard
+                id={item._id}
+                name={item.name}
+                imgUrl={item.imgUrl}
+                isUserRecipe
+                pathName={pathName}
+              />
+            </GridItem>
+          ))}
+        </Grid>
+      ) : (
+        <RecipeNotFound />
+      )}
     </>
   );
 }

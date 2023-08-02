@@ -43,7 +43,7 @@ function UserFavorites() {
 
   return (
     <>
-      <UserRecipes data={recipes} />
+      <UserRecipes data={recipes} pathName='favorites' />
     </>
   );
 }
