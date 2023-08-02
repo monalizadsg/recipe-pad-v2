@@ -27,15 +27,6 @@ function RecipeIndex() {
   }, []);
 
   useEffect(() => {
-    const fetchRecipeData = async () => {
-      const recipeData = await getAllRecipes();
-      setRecipes(recipeData.data);
-    };
-
-    fetchRecipeData();
-  }, []);
-
-  useEffect(() => {
     const filteredRecipes = recipes.filter((item) =>
       item.name.toLowerCase().includes(debouncedValue.toLowerCase())
     );
