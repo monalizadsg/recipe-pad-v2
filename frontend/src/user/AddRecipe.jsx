@@ -55,7 +55,7 @@ function AddRecipe() {
         title: "Recipe created!",
         type: "success",
       });
-      setTimeout(navigate("/my-recipes"), 4000);
+      setTimeout(navigate("/my-recipes"), 8000);
     }
   };
 
