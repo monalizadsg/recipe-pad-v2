@@ -25,7 +25,7 @@ function UserMyRecipes() {
   return (
     <>
       {recipes.length > 0 ? (
-        <UserRecipes data={recipes} isUserRecipe />
+        <UserRecipes data={recipes} isUserRecipe pathName='my-recipes' />
       ) : (
         <Flex
           // border='1px solid red'

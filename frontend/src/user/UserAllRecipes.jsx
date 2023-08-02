@@ -12,7 +12,7 @@ function UserAllRecipes() {
 
   return (
     <>
-      <UserRecipes data={recipes} />
+      <UserRecipes data={recipes} pathName='recipes' />
     </>
   );
 }
