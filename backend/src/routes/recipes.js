@@ -60,6 +60,7 @@ router.post("/", uploader.single("file"), async (req, res) => {
       instructions,
       overallRating: null,
       recipeOwnerId: ownerId,
+      isFavorite: false,
     });
 
     const recipe = await newRecipe.save();
@@ -107,14 +108,24 @@ router.delete("/:id", async (req, res) => {
 });
 
 // save a favorite recipe
-router.put("/favorites", async (req, res) => {
-  const recipe = await RecipeModel.findById(req.body.recipeId);
-  const user = await UserModel.findById(req.body.userId);
+router.put("/favorites/:userId", async (req, res) => {
+  const recipeId = req.body.recipeId;
+  console.log(recipeId);
 
   try {
+    const recipe = await RecipeModel.findById(recipeId);
+    const user = await UserModel.findById(req.params.userId);
+    // update isFavorite to true
+    recipe.isFavorite = true;
+    const newRecipe = await RecipeModel.findByIdAndUpdate(recipeId, recipe, {
+      new: true,
+    });
+    console.log(recipe);
+
+    // add recipe to favorites array
     user.favoriteRecipes.push(recipe);
     await user.save();
-    res.status(200).json({ favoriteRecipes: user.favoriteRecipes });
+    res.status(200).json({ recipe: newRecipe });
   } catch (error) {
     res.status(500).json({ error });
   }
@@ -136,8 +147,15 @@ router.get("/favorites/:userId", async (req, res) => {
 // remove favorite recipe
 router.delete("/favorites/:userId", async (req, res) => {
   const { recipeId } = req.body;
+  console.log(recipeId);
 
   try {
+    const recipe = await RecipeModel.findById(recipeId);
+    recipe.isFavorite = false;
+    const newRecipe = await RecipeModel.findByIdAndUpdate(id, recipe, {
+      new: true,
+    });
+
     const user = await UserModel.findById(req.params.userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -146,7 +164,7 @@ router.delete("/favorites/:userId", async (req, res) => {
     user.favoriteRecipes.pull(recipeId);
     await user.save();
     // return the updated array
-    res.status(200).json({ favoriteRecipes: user.favoriteRecipes });
+    res.status(200).json({ recipe: newRecipe });
   } catch (error) {
     res.status(500).json({ error });
   }

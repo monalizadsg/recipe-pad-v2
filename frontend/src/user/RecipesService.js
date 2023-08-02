@@ -70,12 +70,14 @@ export const deleteRecipe = async (id) => {
 };
 
 export const saveFavoriteRecipe = async (recipeId, userId) => {
-  const result = await api.put(`/api/recipes/favorites`, { recipeId, userId });
+  const result = await api.put(`/api/recipes/favorites/${userId}`, {
+    recipeId,
+  });
   return result;
 };
 
 export const getFavoriteRecipes = async (userId) => {
-  const result = await api.put(`/api/recipes/favorites/${userId}`);
+  const result = await api.get(`/api/recipes/favorites/${userId}`);
   return result;
 };
 
