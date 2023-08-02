@@ -4,24 +4,33 @@ import BackButton from "./BackButton";
 import favIcon from "../assets/heart.png";
 import editIcon from "../assets/edit.png";
 import deletetIcon from "../assets/trash.png";
+import activeFavIcon from "../assets/active_favorite.png";
 import { useLocation, useNavigate } from "react-router-dom";
-import { deleteRecipe, getRecipeById } from "../user/RecipesService";
-import { CustomToast } from "../commons/utils";
+import {
+  deleteFavoriteRecipe,
+  deleteRecipe,
+  getRecipeById,
+  saveFavoriteRecipe,
+} from "../user/RecipesService";
+import { CustomToast, getCurrentUserId } from "../commons/utils";
 import AddRecipe from "./../user/AddRecipe";
 
 function RecipeContent({ isUserRecipe }) {
   const [data, setData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isFav, setIsFav] = useState(false);
   const location = useLocation();
   const recipeId = location?.state?.recipeId;
   const isOnEdit = location?.state?.isEditing;
   const { addToast } = CustomToast();
   const navigate = useNavigate();
+  const userId = getCurrentUserId();
 
   useEffect(() => {
     async function fetchData() {
       const newData = await getRecipeById(recipeId);
       setData(newData);
+      setIsFav(newData.isFavorite);
     }
     console.log({ isOnEdit });
     if (!(isOnEdit === false)) {
@@ -43,6 +52,34 @@ function RecipeContent({ isUserRecipe }) {
 
   const handleEdit = async () => {
     setIsEditing(true);
+  };
+
+  const handleOnSaveFavorite = async () => {
+    console.log(userId);
+    const result = await saveFavoriteRecipe(recipeId, userId);
+    console.log({ result });
+    if (result.status === 200) {
+      addToast({
+        title: "Save recipe as favorite!",
+        type: "success",
+      });
+      setData(result.data.recipe);
+      setIsFav(true);
+    }
+  };
+
+  const handleOnRemoveFavorite = async () => {
+    console.log(userId);
+    const result = await deleteFavoriteRecipe(recipeId, userId);
+    console.log({ result });
+    if (result.status === 200) {
+      addToast({
+        title: "Remove recipe as favorite!",
+        type: "success",
+      });
+      setData(result.data.recipe);
+      setIsFav(false);
+    }
   };
 
   const Content = () => {
@@ -78,12 +115,24 @@ function RecipeContent({ isUserRecipe }) {
                       {data?.name}
                     </Text>
                     <Flex gap={3}>
-                      <Image
-                        cursor='pointer'
-                        boxSize='20px'
-                        src={favIcon}
-                        alt='Favorite Recipe'
-                      />
+                      {isFav ? (
+                        <Image
+                          cursor='pointer'
+                          boxSize='20px'
+                          src={activeFavIcon}
+                          onClick={handleOnRemoveFavorite}
+                          alt='Favorite Recipe'
+                        />
+                      ) : (
+                        <Image
+                          cursor='pointer'
+                          boxSize='20px'
+                          src={favIcon}
+                          onClick={handleOnSaveFavorite}
+                          alt='Favorite Recipe'
+                        />
+                      )}
+
                       {isUserRecipe && (
                         <>
                           <Image

@@ -45,6 +45,9 @@ const RecipeSchema = new mongoose.Schema({
     required: true,
   },
   reviews: [reviewSchema],
+  isFavorite: {
+    type: Boolean,
+  },
 });
 
 export const RecipeModel = mongoose.model("Recipes", RecipeSchema);
