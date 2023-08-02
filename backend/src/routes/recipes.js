@@ -72,8 +72,7 @@ router.post("/", uploader.single("file"), async (req, res) => {
 // edit recipe
 router.put("/", uploader.single("file"), async (req, res) => {
   const { id, name, description, ingredients, instructions } = req.body;
-  let imgUrl = req.body.imgFile;
-
+  let imgUrl = req.body.imgUrl;
   if (!imgUrl) {
     imgUrl = await uploadFileAndGetURL(req.file.path);
   }
