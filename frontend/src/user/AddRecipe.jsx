@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -12,22 +12,43 @@ import {
 } from "@chakra-ui/react";
 import ImageUploader from "../components/ImageUploader";
 import BackButton from "../components/BackButton";
-import { addRecipe } from "./RecipesService";
+import { addRecipe, editRecipe } from "./RecipesService";
 import { CustomToast, getCurrentUserId } from "../commons/utils";
 import { useNavigate } from "react-router-dom";
 
-function AddRecipe() {
+function AddRecipe({ isEditing, selectedRecipe }) {
   const [recipeData, setRecipeData] = useState({
     image: "",
-    title: "",
+    name: "",
     description: "",
     ingredients: "",
     instructions: "",
   });
+  // const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [image, setImage] = useState(null);
+  const [isDisabled, setIsDisabled] = useState(false);
   const ownerId = getCurrentUserId();
   const navigate = useNavigate();
   const { addToast } = CustomToast();
+
+  useEffect(() => {
+    if (selectedRecipe) {
+      setRecipeData(selectedRecipe);
+      setImage(selectedRecipe.imgUrl);
+      // setSelectedRecipe(selectedRecipe);
+    }
+  }, [selectedRecipe]);
+
+  useEffect(() => {
+    const { name, ingredients, instructions } = recipeData;
+    const disabled =
+      !name ||
+      !(selectedRecipe ? recipeData?.imgUrl : image) ||
+      !ingredients ||
+      !instructions;
+    setIsDisabled(disabled);
+    console.log({ isDisabled: disabled });
+  }, [image, recipeData, selectedRecipe]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,23 +62,47 @@ function AddRecipe() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // TODO: handle the recipe submission here
+    const { name, description, ingredients, instructions } = recipeData;
     const recipe = {
-      name: recipeData.title,
-      description: recipeData.description,
+      name,
+      description,
       imgFile: image,
-      ingredients: recipeData.ingredients,
-      instructions: recipeData.instructions,
+      ingredients,
+      instructions,
       ownerId: ownerId,
     };
-    const result = await addRecipe(recipe);
-    if (result.status === 201) {
-      addToast({
-        title: "Recipe created!",
-        type: "success",
-      });
-      setTimeout(navigate("/my-recipes"), 8000);
+
+    let upsertPromise = null;
+    if (selectedRecipe?._id) {
+      upsertPromise = editRecipe(recipe, selectedRecipe?._id);
+    } else {
+      upsertPromise = addRecipe(recipe);
+    }
+
+    try {
+      const result = await upsertPromise;
+      if (result.status === 200 || result.status === 200) {
+        if (isEditing) {
+          console.log({ result });
+          addToast({
+            title: "Recipe updated!",
+            type: "success",
+          });
+          setTimeout(navigate(`/my-recipes`), 8000);
+        } else {
+          addToast({
+            title: "Recipe created!",
+            type: "success",
+          });
+          setTimeout(navigate("/my-recipes"), 8000);
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
+
+  const { name, description, ingredients, instructions } = recipeData;
 
   return (
     <Flex
@@ -69,24 +114,27 @@ function AddRecipe() {
       <BackButton />
       <Box p={8} pt={6} bgColor='#FFFAEF' borderRadius={10} position='relative'>
         <Heading size='md' mb={6}>
-          New Recipe
+          {`${isEditing ? "Edit" : "New"} Recipe`}
         </Heading>
         <form onSubmit={handleSubmit}>
           <VStack spacing={3} align='stretch' alignItems='center'>
             {/* Image Upload */}
-            <ImageUploader onChange={handleImageChange} />
+            <ImageUploader
+              onChange={handleImageChange}
+              imgUrl={recipeData.imgUrl}
+            />
 
             {/* Title */}
             <FormControl>
               <Input
                 type='text'
-                name='title'
+                name='name'
                 fontWeight={700}
                 variant='unstyled'
                 placeholder='Title your recipe...'
                 fontSize='xl'
                 sx={{ "::placeholder": { fontWeight: 600 } }}
-                value={recipeData.title}
+                value={name}
                 onChange={handleChange}
               />
             </FormControl>
@@ -94,11 +142,19 @@ function AddRecipe() {
             {/* Description */}
             <FormControl>
               <FormLabel>Description (optional)</FormLabel>
-              <Input
+              <Textarea
                 name='description'
-                value={recipeData.description}
+                value={description}
                 onChange={handleChange}
                 variant='unstyled'
+                // rows={4}
+                // placeholder='Enter your ingredients, one per line...'
+                resize='none'
+                sx={{
+                  "&::-webkit-scrollbar": {
+                    width: "4px",
+                  },
+                }}
               />
             </FormControl>
 
@@ -107,17 +163,17 @@ function AddRecipe() {
               <FormLabel>Ingredients (one on each line)</FormLabel>
               <Textarea
                 name='ingredients'
-                value={recipeData.ingredients}
+                value={ingredients}
                 onChange={handleChange}
                 variant='unstyled'
-                rows={2}
+                // rows={4}
                 placeholder='Enter your ingredients, one per line...'
                 resize='none'
-                sx={{
-                  "&::-webkit-scrollbar": {
-                    width: "4px",
-                  },
-                }}
+                // sx={{
+                //   "&::-webkit-scrollbar": {
+                //     width: "4px",
+                //   },
+                // }}
               />
             </FormControl>
 
@@ -128,17 +184,17 @@ function AddRecipe() {
               </FormLabel>
               <Textarea
                 name='instructions'
-                value={recipeData.instructions}
+                value={instructions}
                 onChange={handleChange}
                 variant='unstyled'
-                rows={6}
+                // rows={6}
                 placeholder='Enter your instructions, one step per line...'
                 resize='none'
-                sx={{
-                  "&::-webkit-scrollbar": {
-                    width: "4px",
-                  },
-                }}
+                // sx={{
+                //   "&::-webkit-scrollbar": {
+                //     width: "4px",
+                //   },
+                // }}
               />
             </FormControl>
 
@@ -148,8 +204,9 @@ function AddRecipe() {
               type='submit'
               bgColor='#FFBE73'
               _hover={{ bgColor: "#FF8900" }}
+              isDisabled={isDisabled}
             >
-              Add Recipe
+              {isEditing ? "Save" : "Add Recipe"}
             </Button>
           </VStack>
         </form>

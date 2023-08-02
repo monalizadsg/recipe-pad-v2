@@ -25,10 +25,15 @@ function App() {
       </Route>
       <Route element={<PrivateRoute />}>
         <Route path='/recipes' element={<UserAllRecipes />} />
-        <Route path='/favorites' element={<UserFavorites />} />
-        <Route path='/my-recipes' element={<UserMyRecipes />} />
-        <Route path='/add-recipe' element={<AddRecipe />} />
         <Route path='/recipes/:slug' element={<RecipeContent />} />
+        <Route path='/favorites' element={<UserFavorites />} />
+        <Route path='/favorites/:slug' element={<RecipeContent />} />
+        <Route path='/my-recipes' element={<UserMyRecipes />} />
+        <Route
+          path='/my-recipes/:slug'
+          element={<RecipeContent isUserRecipe />}
+        />
+        <Route path='/add-recipe' element={<AddRecipe />} />
       </Route>
       <Route path='/sign-up' element={<SignUp />} />
       <Route path='/login' element={<Login />} />

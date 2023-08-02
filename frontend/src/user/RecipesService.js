@@ -12,7 +12,7 @@ export const getUserRecipes = async (userId) => {
 
 export const getRecipeById = async (recipeId) => {
   const result = await api.get(`/api/recipes/${recipeId}`);
-  return result;
+  return result.data;
 };
 
 export const addRecipe = async ({
@@ -40,21 +40,14 @@ export const addRecipe = async ({
   return result;
 };
 
-export const editRecipe = async ({
-  name,
-  description,
-  imgFile,
-  ingredients,
-  instructions,
-  // ownerId,
-}) => {
+export const editRecipe = async (data, id) => {
+  const { name, description, imgFile, ingredients, instructions } = data;
   const formData = new FormData();
   formData.append("name", name);
   formData.append("description", description);
-
   formData.append("ingredients", ingredients);
   formData.append("instructions", instructions);
-  // formData.append("ownerId", ownerId);
+  formData.append("id", id);
 
   if (typeof imgFile === "string") {
     formData.append("imgUrl", imgFile);

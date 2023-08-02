@@ -1,16 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Flex, Input, Image, Text } from "@chakra-ui/react";
 import fileUpload from "../assets/upload.png";
 
-function ImageUploader({ onChange }) {
+function ImageUploader({ onChange, imgUrl }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
 
+  useEffect(() => {
+    if (imgUrl) {
+      setPreviewImage(imgUrl);
+    }
+  }, [imgUrl]);
+
   const handleOnChange = (event) => {
-    console.log({ event });
     const imageFile = event.target.files[0];
     setSelectedImage(imageFile);
-    console.log({ imageFile });
 
     if (imageFile != null) {
       // pass imageFile to parent
@@ -39,7 +43,7 @@ function ImageUploader({ onChange }) {
             <Text fontSize='md' fontWeight={500} pl='15px'>
               {previewImage && selectedImage
                 ? selectedImage.name
-                : "Upload photo"}
+                : `${imgUrl ? "Update" : "Upload"} photo`}
             </Text>
           </Flex>
         </label>
@@ -55,10 +59,10 @@ function ImageUploader({ onChange }) {
         </Flex>
       </Flex>
       <Flex style={{ position: "absolute", top: 30, right: 50 }}>
-        {selectedImage && (
+        {(selectedImage || imgUrl) && (
           <Image
             cursor='pointer'
-            boxSize='200px'
+            boxSize='150px'
             src={previewImage}
             alt='Preview'
             objectFit='cover'
