@@ -1,9 +1,20 @@
 import { Flex, Text, Image } from "@chakra-ui/react";
 import favorite from "../assets/active_favorite.png";
+import { useNavigate } from "react-router-dom";
 
-function RecipeCard({ name, imgUrl, isFavorite }) {
+function RecipeCard({ id, name, imgUrl, isFavorite, pathName }) {
+  const navigate = useNavigate();
   return (
-    <Flex flexDirection='column' alignItems='center' mb='20px'>
+    <Flex
+      flexDirection='column'
+      alignItems='center'
+      mb='20px'
+      onClick={() =>
+        navigate(`/${pathName}/${name.replace(/ /g, "-")}`, {
+          state: { recipeId: id },
+        })
+      }
+    >
       <Flex
         style={{
           position: "relative",

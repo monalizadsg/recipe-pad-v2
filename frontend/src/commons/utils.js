@@ -16,3 +16,7 @@ export const CustomToast = () => {
 
   return { addToast };
 };
+
+export const getCurrentUserId = () => {
+  return localStorage.getItem("id");
+};

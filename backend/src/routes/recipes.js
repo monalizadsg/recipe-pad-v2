@@ -1,9 +1,18 @@
 import express from "express";
+import bodyParser from "body-parser";
+import multer from "multer";
 import { RecipeModel } from "../model/Recipes.js";
 import { UserModel } from "../model/Users.js";
 import calculateRatings from "../utils/calculateRatings.js";
+import { uploadFileAndGetURL } from "../cloudinary/index.js";
 
 const router = express.Router();
+
+router.use(bodyParser.json());
+
+const uploader = multer({
+  dest: "uploads/",
+});
 
 // get all recipes
 router.get("/", async (req, res) => {
@@ -15,65 +24,36 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Get user recipes
-router.get("/user-recipes/:userId", async (req, res) => {
-  const userId = req.params.userId;
+// search recipe
+router.get("/search", async (req, res) => {
   try {
-    const userRecipes = await RecipeModel.find({ userOwner: userId });
-    res.status(200).json({ userRecipes });
+    const { q } = req.query;
+    const keys = ["name"];
+
+    const allRecipes = await RecipeModel.find({});
+
+    const search = (data, q, keys) => {
+      return data.filter((item) =>
+        keys.some((key) => item[key].toLowerCase().includes(q))
+      );
+    };
+
+    const results = q ? search(allRecipes, q, keys) : allRecipes;
+
+    res.status(200).json(results);
   } catch (error) {
     res.status(500).json(error);
   }
 });
 
-// create new recipe
-router.post("/", async (req, res) => {
-  console.log(req.body);
-  const { name, description, ingredients, instructions, userOwner } = req.body;
-  // TODO: update imgUrl
-  const imgUrl = "https://source.unsplash.com/kcA-c3f_3FE";
-
-  // generate unique id
-  // let generatedRecipeId;
-  // let unique = false;
-
-  // while (!unique) {
-  //   // Generate a random number as the userId
-  //   generatedRecipeId = generateRandomNumber(1, 99999); // Modify the range as needed
-
-  //   // Check if the userId already exists in the collection
-  //   const existingRecipe = await RecipeModel.findOne({
-  //     id: generatedRecipeId,
-  //   });
-
-  //   if (!existingRecipe) {
-  //     // If the userId is unique, exit the loop
-  //     unique = true;
-  //   }
-  // }
-
-  // TODO: figure out how to add overallRating
-  let overallRating = null;
-
+// Get user recipes
+router.get("/user-recipes/:userId", async (req, res) => {
+  const userId = req.params.userId;
   try {
-    const newRecipe = new RecipeModel({
-      // id: generatedRecipeId,
-      name,
-      description,
-      imgUrl,
-      ingredients,
-      instructions,
-      overallRating,
-      userOwner,
-      // ownerID, // TODO: add ownerID
-    });
-
-    const recipe = await newRecipe.save();
-    console.log(newRecipe);
-    res.status(201).json(recipe);
+    const userRecipes = await RecipeModel.find({ recipeOwnerId: userId });
+    res.status(200).json({ userRecipes });
   } catch (error) {
-    res.status(500).json({ message: "Error saving recipe to the database." });
-    console.log(error);
+    res.status(500).json(error);
   }
 });
 
@@ -88,9 +68,37 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// create new recipe
+router.post("/", uploader.single("file"), async (req, res) => {
+  const { name, description, ingredients, instructions, ownerId } = req.body;
+  const imgUrl = await uploadFileAndGetURL(req.file.path);
+
+  try {
+    const newRecipe = new RecipeModel({
+      name,
+      description,
+      imgUrl,
+      ingredients,
+      instructions,
+      overallRating: null,
+      recipeOwnerId: ownerId,
+      isFavorite: false,
+    });
+
+    const recipe = await newRecipe.save();
+    res.status(201).json(recipe);
+  } catch (error) {
+    res.status(500).json({ message: "Error saving recipe to the database." });
+  }
+});
+
 // edit recipe
-router.put("/", async (req, res) => {
-  const { id, name, description, imgUrl, ingredients, instructions } = req.body;
+router.put("/", uploader.single("file"), async (req, res) => {
+  const { id, name, description, ingredients, instructions } = req.body;
+  let imgUrl = req.body.imgUrl;
+  if (!imgUrl) {
+    imgUrl = await uploadFileAndGetURL(req.file.path);
+  }
 
   try {
     const result = await RecipeModel.findByIdAndUpdate(
@@ -122,14 +130,24 @@ router.delete("/:id", async (req, res) => {
 });
 
 // save a favorite recipe
-router.put("/favorites", async (req, res) => {
-  const recipe = await RecipeModel.findById(req.body.recipeId);
-  const user = await UserModel.findById(req.body.userId);
+router.put("/favorites/:userId", async (req, res) => {
+  const recipeId = req.body.recipeId;
+  console.log(recipeId);
 
   try {
+    const recipe = await RecipeModel.findById(recipeId);
+    const user = await UserModel.findById(req.params.userId);
+    // update isFavorite to true
+    recipe.isFavorite = true;
+    const newRecipe = await RecipeModel.findByIdAndUpdate(recipeId, recipe, {
+      new: true,
+    });
+    console.log(recipe);
+
+    // add recipe to favorites array
     user.favoriteRecipes.push(recipe);
     await user.save();
-    res.status(200).json({ favoriteRecipes: user.favoriteRecipes });
+    res.status(200).json({ recipe: newRecipe });
   } catch (error) {
     res.status(500).json({ error });
   }
@@ -151,8 +169,15 @@ router.get("/favorites/:userId", async (req, res) => {
 // remove favorite recipe
 router.delete("/favorites/:userId", async (req, res) => {
   const { recipeId } = req.body;
+  console.log(recipeId);
 
   try {
+    const recipe = await RecipeModel.findById(recipeId);
+    recipe.isFavorite = false;
+    const newRecipe = await RecipeModel.findByIdAndUpdate(id, recipe, {
+      new: true,
+    });
+
     const user = await UserModel.findById(req.params.userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -161,7 +186,7 @@ router.delete("/favorites/:userId", async (req, res) => {
     user.favoriteRecipes.pull(recipeId);
     await user.save();
     // return the updated array
-    res.status(200).json({ favoriteRecipes: user.favoriteRecipes });
+    res.status(200).json({ recipe: newRecipe });
   } catch (error) {
     res.status(500).json({ error });
   }
@@ -170,11 +195,11 @@ router.delete("/favorites/:userId", async (req, res) => {
 // add a review for a recipe
 router.post("/:recipeId/reviews", async (req, res) => {
   const recipeId = req.params.recipeId;
-  const { reviewer, comment, rating } = req.body;
+  const { reviewerId, comment, rating } = req.body;
 
   try {
     // Validate the review data
-    if (!reviewer || !rating) {
+    if (!reviewerId || !rating) {
       return res
         .status(400)
         .json({ error: "Reviewer, and rating are required fields" });
@@ -193,7 +218,7 @@ router.post("/:recipeId/reviews", async (req, res) => {
     }
 
     // Check if the reviewer is the owner of the recipe
-    if (recipe.userOwner.toString() === reviewer) {
+    if (recipe.recipeOwnerId.toString() === reviewerId) {
       return res
         .status(400)
         .json({ error: "You cannot review your own recipe" });
@@ -201,7 +226,7 @@ router.post("/:recipeId/reviews", async (req, res) => {
 
     // Create the review object
     const newReview = {
-      reviewer: reviewer,
+      reviewerId: reviewerId,
       comment: comment,
       rating: rating,
     };

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const reviewSchema = new mongoose.Schema({
-  reviewer: {
+  reviewerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
@@ -39,12 +39,15 @@ const RecipeSchema = new mongoose.Schema({
   overallRating: {
     type: Number,
   },
-  userOwner: {
+  recipeOwnerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
   reviews: [reviewSchema],
+  isFavorite: {
+    type: Boolean,
+  },
 });
 
 export const RecipeModel = mongoose.model("Recipes", RecipeSchema);

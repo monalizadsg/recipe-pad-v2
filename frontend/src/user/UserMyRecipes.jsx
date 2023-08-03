@@ -1,23 +1,31 @@
 import { useState, useEffect } from "react";
 import { Flex, Text, Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { userRecipeMockData } from "../data/RecipeData";
+// import { userRecipeMockData } from "../data/RecipeData";
 import UserRecipes from "./UserRecipes";
+import { getUserRecipes } from "./RecipesService";
+import { getCurrentUserId } from "../commons/utils";
 
 function UserMyRecipes() {
   const [recipes, setRecipes] = useState([]);
+  const userId = getCurrentUserId();
 
   const navigate = useNavigate();
 
   useEffect(() => {
     // TODO: fetch recipe data here
-    setRecipes(userRecipeMockData);
-  }, []);
+    async function fetchData() {
+      const data = await getUserRecipes(userId);
+      console.log({ data });
+      setRecipes(data);
+    }
+    fetchData();
+  }, [userId]);
 
   return (
     <>
       {recipes.length > 0 ? (
-        <UserRecipes data={recipes} isUserRecipe />
+        <UserRecipes data={recipes} isUserRecipe pathName='my-recipes' />
       ) : (
         <Flex
           // border='1px solid red'

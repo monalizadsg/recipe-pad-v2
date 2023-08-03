@@ -1,5 +1,6 @@
 import { Flex } from "@chakra-ui/react";
 import SideNav from "../components/SideNav";
+import ScrollContainer from "../components/ScrollContainer";
 
 function UserAppContainer(props) {
   return (
@@ -12,8 +13,8 @@ function UserAppContainer(props) {
         gap={10}
       >
         <SideNav />
-        <Flex flexDir='column' flexGrow={1}>
-          {props.children}
+        <Flex flexDir='column' flexGrow={1} w='80%'>
+          <ScrollContainer>{props.children}</ScrollContainer>
         </Flex>
       </Flex>
     </Flex>
