@@ -1,21 +1,30 @@
 import RecipeCard from "./RecipeCard";
 import SearchBar from "./SearchBar";
 import { Grid, VStack } from "@chakra-ui/react";
-import { recipeData } from "../data/RecipeData";
+//import { recipeData } from "../data/RecipeData";
 import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 import RecipeNotFound from "./RecipeNotFound";
+import { getAllRecipes } from "../user/RecipesService";
 import { searchAllRecipes } from "../user/RecipesService";
 
 function RecipeIndex() {
-  const [recipes, setRecipes] = useState([]);
+  // const [recipes, setRecipes] = useState([]);
   const [filteredRecipes, setFilteredRecipes] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [debouncedValue] = useDebounce(inputValue, 500);
 
   useEffect(() => {
     // TODO: fetch recipe data here
-    setRecipes(recipeData);
+    /* setRecipes(recipeData);
+  }, []);*/
+
+    const fetchRecipeData = async () => {
+      const recipeData = await getAllRecipes();
+      setFilteredRecipes(recipeData.data);
+    };
+
+    fetchRecipeData();
   }, []);
 
   useEffect(() => {

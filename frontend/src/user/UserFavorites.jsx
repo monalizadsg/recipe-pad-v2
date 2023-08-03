@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 import UserRecipes from "./UserRecipes";
+import { getFavoriteRecipes } from "./RecipesService";
 
-const favRecipesMockupData = [
+/* const favRecipesMockupData = [
   {
     id: 1,
     name: "Gyoza",
@@ -27,7 +28,7 @@ const favRecipesMockupData = [
     ingredients: ["cabbage, meat, onion, garlic, salt, pepper"],
     instructions: ["Mixed all ingredients. Wrap. Cook."],
   },
-];
+]; */
 
 function UserFavorites() {
   const [recipes, setRecipes] = useState([]);
@@ -35,10 +36,15 @@ function UserFavorites() {
 
   useEffect(() => {
     // TODO: fetch recipe data here
-    const newRecipes = favRecipesMockupData.map((item) => {
-      return { ...item, isFavorite: true };
-    });
-    setRecipes(newRecipes);
+    /* setRecipes(recipeData);
+  }, []);*/
+
+    const fetchRecipeData = async () => {
+      const recipeData = await getFavoriteRecipes();
+      setRecipes(recipeData.data);
+    };
+
+    fetchRecipeData();
   }, []);
 
   return (
