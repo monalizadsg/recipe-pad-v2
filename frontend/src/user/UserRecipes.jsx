@@ -15,7 +15,9 @@ function UserRecipes({ data, isUserRecipe, pathName }) {
   // const navigate = useNavigate();
 
   useEffect(() => {
-    setRecipes(data);
+    if (data) {
+      setRecipes(data);
+    }
   }, [data]);
 
   useEffect(() => {

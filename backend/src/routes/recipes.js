@@ -24,6 +24,28 @@ router.get("/", async (req, res) => {
   }
 });
 
+// search recipe
+router.get("/search", async (req, res) => {
+  try {
+    const { q } = req.query;
+    const keys = ["name"];
+
+    const allRecipes = await RecipeModel.find({});
+
+    const search = (data, q, keys) => {
+      return data.filter((item) =>
+        keys.some((key) => item[key].toLowerCase().includes(q))
+      );
+    };
+
+    const results = q ? search(allRecipes, q, keys) : allRecipes;
+
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
 // Get user recipes
 router.get("/user-recipes/:userId", async (req, res) => {
   const userId = req.params.userId;

@@ -9,7 +9,7 @@ import { getAllRecipes } from "../user/RecipesService";
 import { searchAllRecipes } from "../user/RecipesService";
 
 function RecipeIndex() {
-  const [recipes, setRecipes] = useState([]);
+  // const [recipes, setRecipes] = useState([]);
   const [filteredRecipes, setFilteredRecipes] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [debouncedValue] = useDebounce(inputValue, 500);
@@ -21,7 +21,7 @@ function RecipeIndex() {
 
     const fetchRecipeData = async () => {
       const recipeData = await getAllRecipes();
-      setRecipes(recipeData.data);
+      setFilteredRecipes(recipeData.data);
     };
 
     fetchRecipeData();
