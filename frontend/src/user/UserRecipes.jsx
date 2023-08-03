@@ -6,7 +6,6 @@ import SearchBar from "../components/SearchBar";
 import { useDebounce } from "use-debounce";
 import AddRecipeCard from "./AddRecipeCard";
 import RecipeNotFound from "../components/RecipeNotFound";
-import { ProfileMenu } from "../components/ProfileMenu";
 
 function UserRecipes({ data, isUserRecipe, pathName }) {
   const [recipes, setRecipes] = useState(data);
@@ -34,11 +33,11 @@ function UserRecipes({ data, isUserRecipe, pathName }) {
 
   return (
     <>
-      <Flex justifyContent="center" mb={3}>
+      <Flex justifyContent='center' mb={3}>
         <SearchBar handleSearch={handleSearch} />
       </Flex>
       {filteredRecipes.length > 0 ? (
-        <Grid templateColumns="repeat(4, 1fr)" gap={10} w="100%">
+        <Grid templateColumns='repeat(4, 1fr)' gap={10} w='100%'>
           {isUserRecipe && <AddRecipeCard />}
           {filteredRecipes.map((item) => (
             <GridItem key={item._id}>

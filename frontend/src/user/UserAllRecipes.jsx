@@ -1,16 +1,12 @@
 import { useState, useEffect } from "react";
-import { userRecipeMockData } from "../data/RecipeData";
 import UserRecipes from "./UserRecipes";
 import { getAllRecipes } from "./RecipesService";
+import ScrollContainer from "../components/ScrollContainer";
 
 function UserAllRecipes() {
   const [recipes, setRecipes] = useState([]);
 
   useEffect(() => {
-    // TODO: fetch recipe data here
-    /* setRecipes(recipeData);
-  }, []);*/
-
     const fetchRecipeData = async () => {
       const recipeData = await getAllRecipes();
       setRecipes(recipeData.data);
@@ -21,7 +17,9 @@ function UserAllRecipes() {
 
   return (
     <>
-      <UserRecipes data={recipes} pathName='recipes' />
+      <ScrollContainer>
+        <UserRecipes data={recipes} pathName='recipes' />
+      </ScrollContainer>
     </>
   );
 }
