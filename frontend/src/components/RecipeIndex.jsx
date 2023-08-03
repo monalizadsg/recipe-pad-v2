@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 import RecipeNotFound from "./RecipeNotFound";
 import { getAllRecipes } from "../user/RecipesService";
+import { searchAllRecipes } from "../user/RecipesService";
 
 function RecipeIndex() {
   const [recipes, setRecipes] = useState([]);
@@ -27,11 +28,12 @@ function RecipeIndex() {
   }, []);
 
   useEffect(() => {
-    const filteredRecipes = recipes.filter((item) =>
-      item.name.toLowerCase().includes(debouncedValue.toLowerCase())
-    );
-    setFilteredRecipes(filteredRecipes);
-  }, [debouncedValue, recipes]);
+    async function handleSearch() {
+      const result = await searchAllRecipes(debouncedValue);
+      setFilteredRecipes(result.data);
+    }
+    handleSearch();
+  }, [debouncedValue]);
 
   const handleSearch = (input) => {
     setInputValue(input);
