@@ -37,16 +37,14 @@ export const ProfileMenu = () => {
     navigate("/login");
   };
 
-  const isRecipesRoute = location.pathname === "/recipes";
-
   return (
-    <Menu isOpen={isOpen} placement="bottom-start">
-      <MenuButton onMouseEnter={onOpen} onMouseLeave={onClose}>
-        <Avatar name={username} bg={isRecipesRoute ? "#FFBE73" : "#FE7071"} />
+    <Menu placement="bottom-start">
+      <MenuButton onMouseEnter={onOpen}>
+        <Avatar name={username} bg={"#FE7071"} textColor={"white"} />
       </MenuButton>
-      <MenuList onMouseEnter={onOpen} onMouseLeave={onClose}>
+      <MenuList>
         <MenuGroup>
-          <MenuItem justifyContent="center">
+          <MenuItem justifyContent="center" _focus={{ bg: "none" }}>
             <Stack
               display="flex"
               alignItems="center"
@@ -64,7 +62,7 @@ export const ProfileMenu = () => {
         <MenuGroup>
           <MenuItem padding="0 0 0 30px" h="30px">
             <Image boxSize=".85rem" src={dashboardLogo} mr="12px" />
-            <NavLink to="/recipes" _hover={{ fontWeight: 700 }}>
+            <NavLink to="/recipes">
               <Text>Dashboard</Text>
             </NavLink>
           </MenuItem>
