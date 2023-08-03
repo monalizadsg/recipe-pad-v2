@@ -5,6 +5,11 @@ export const getAllRecipes = async () => {
   return result;
 };
 
+export const searchAllRecipes = async (searchQuery) => {
+  const result = api.get(`/api/recipes/search?q=${searchQuery}`);
+  return result;
+};
+
 export const getUserRecipes = async (userId) => {
   const result = await api.get(`/api/recipes/user-recipes/${userId}`);
   return result.data.userRecipes;
