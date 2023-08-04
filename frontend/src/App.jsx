@@ -20,8 +20,10 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/recipe-index' element={<RecipeIndex />} />
         <Route path='/about-us' element={<AboutUs />} />
-        {/* TODO: update ui when in landing page */}
-        {/* <Route path='/recipes/:slug' element={<RecipeContent />} /> */}
+        <Route
+          path='/recipe-index/:slug'
+          element={<RecipeContent isLandingPage />}
+        />
       </Route>
       <Route element={<PrivateRoute />}>
         <Route path='/recipes' element={<UserAllRecipes />} />

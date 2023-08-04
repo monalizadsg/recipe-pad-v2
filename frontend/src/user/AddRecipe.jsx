@@ -107,12 +107,20 @@ function AddRecipe({ isEditing, selectedRecipe }) {
   return (
     <Flex
       flexDir='column'
-      gap={4}
+      justifyContent='space-between'
+      gap={2}
       // border='1px solid green'
       height='calc(100vh - 60px)'
     >
       <BackButton />
-      <Box p={8} pt={6} bgColor='#FFFAEF' borderRadius={10} position='relative'>
+      <Box
+        p={8}
+        pt={6}
+        height='100%'
+        bgColor='#FFFAEF'
+        borderRadius={10}
+        position='relative'
+      >
         <Heading size='md' mb={6}>
           {`${isEditing ? "Edit" : "New"} Recipe`}
         </Heading>
@@ -147,12 +155,21 @@ function AddRecipe({ isEditing, selectedRecipe }) {
                 value={description}
                 onChange={handleChange}
                 variant='unstyled'
-                // rows={4}
-                // placeholder='Enter your ingredients, one per line...'
                 resize='none'
                 sx={{
                   "&::-webkit-scrollbar": {
-                    width: "4px",
+                    width: "6px",
+                    backgroundColor: `rgba(0, 0, 0, 0.05)`,
+                  },
+                  "&::-webkit-scrollbar-track": {
+                    w: "6px",
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    borderRadius: "10",
+                    bg: "#ffe0c3",
+                  },
+                  "&::-webkit-scrollbar-thumb:hover": {
+                    bg: "#ffb875",
                   },
                 }}
               />
@@ -169,11 +186,22 @@ function AddRecipe({ isEditing, selectedRecipe }) {
                 // rows={4}
                 placeholder='Enter your ingredients, one per line...'
                 resize='none'
-                // sx={{
-                //   "&::-webkit-scrollbar": {
-                //     width: "4px",
-                //   },
-                // }}
+                sx={{
+                  "&::-webkit-scrollbar": {
+                    width: "6px",
+                    backgroundColor: `rgba(0, 0, 0, 0.05)`,
+                  },
+                  "&::-webkit-scrollbar-track": {
+                    w: "6px",
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    borderRadius: "10",
+                    bg: "#ffe0c3",
+                  },
+                  "&::-webkit-scrollbar-thumb:hover": {
+                    bg: "#ffb875",
+                  },
+                }}
               />
             </FormControl>
 
@@ -190,11 +218,22 @@ function AddRecipe({ isEditing, selectedRecipe }) {
                 // rows={6}
                 placeholder='Enter your instructions, one step per line...'
                 resize='none'
-                // sx={{
-                //   "&::-webkit-scrollbar": {
-                //     width: "4px",
-                //   },
-                // }}
+                sx={{
+                  "&::-webkit-scrollbar": {
+                    width: "6px",
+                    backgroundColor: `rgba(0, 0, 0, 0.05)`,
+                  },
+                  "&::-webkit-scrollbar-track": {
+                    w: "6px",
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    borderRadius: "10",
+                    bg: "#ffe0c3",
+                  },
+                  "&::-webkit-scrollbar-thumb:hover": {
+                    bg: "#ffb875",
+                  },
+                }}
               />
             </FormControl>
 

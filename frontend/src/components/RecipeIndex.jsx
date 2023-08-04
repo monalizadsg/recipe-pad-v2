@@ -46,10 +46,12 @@ function RecipeIndex() {
         <Grid templateColumns={"repeat(4, 1fr)"} gap={50} margin={10}>
           {filteredRecipes.map((data) => (
             <RecipeCard
-              key={data.id}
+              key={data._id}
+              id={data._id}
               name={data.name}
               imgUrl={data.imgUrl}
               search={inputValue}
+              pathName='recipe-index'
             />
           ))}
         </Grid>

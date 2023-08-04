@@ -7,6 +7,7 @@ import calculateRatings from "../utils/calculateRatings.js";
 import { uploadFileAndGetURL } from "../cloudinary/index.js";
 
 const router = express.Router();
+const publicRouter = express.Router();
 
 router.use(bodyParser.json());
 
@@ -15,7 +16,7 @@ const uploader = multer({
 });
 
 // get all recipes
-router.get("/", async (req, res) => {
+publicRouter.get("/", async (req, res) => {
   try {
     const result = await RecipeModel.find({});
     res.status(200).json(result);
@@ -25,7 +26,7 @@ router.get("/", async (req, res) => {
 });
 
 // search recipe
-router.get("/search", async (req, res) => {
+publicRouter.get("/search", async (req, res) => {
   try {
     const { q } = req.query;
     const keys = ["name"];
@@ -46,6 +47,17 @@ router.get("/search", async (req, res) => {
   }
 });
 
+// get recipe by id
+publicRouter.get("/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    let recipe = await RecipeModel.findById(id);
+    res.status(200).json(recipe);
+  } catch (error) {
+    res.status(500).json({ message: "Error getting a recipe by id" });
+  }
+});
+
 // Get user recipes
 router.get("/user-recipes/:userId", async (req, res) => {
   const userId = req.params.userId;
@@ -54,17 +66,6 @@ router.get("/user-recipes/:userId", async (req, res) => {
     res.status(200).json({ userRecipes });
   } catch (error) {
     res.status(500).json(error);
-  }
-});
-
-// get recipe by id
-router.get("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    let recipe = await RecipeModel.findById(id);
-    res.status(200).json(recipe);
-  } catch (error) {
-    res.status(500).json({ message: "Error getting a recipe by id" });
   }
 });
 
@@ -137,17 +138,27 @@ router.put("/favorites/:userId", async (req, res) => {
   try {
     const recipe = await RecipeModel.findById(recipeId);
     const user = await UserModel.findById(req.params.userId);
-    // update isFavorite to true
-    recipe.isFavorite = true;
-    const newRecipe = await RecipeModel.findByIdAndUpdate(recipeId, recipe, {
-      new: true,
-    });
-    console.log(recipe);
 
-    // add recipe to favorites array
-    user.favoriteRecipes.push(recipe);
-    await user.save();
-    res.status(200).json({ recipe: newRecipe });
+    if (!recipe || !user) {
+      return res.status(404).json({ error: "Recipe or user not found" });
+    }
+
+    // Update isFavorite property of the recipe to true
+    recipe.isFavorite = true;
+    await recipe.save();
+
+    // Check if the recipe is already in the user's favorites
+    const isRecipeInFavorites = user.favoriteRecipes.some(
+      (favoriteRecipe) => favoriteRecipe.toString() === recipeId
+    );
+
+    if (!isRecipeInFavorites) {
+      // Add the recipe to the user's favoriteRecipes array
+      user.favoriteRecipes.push(recipe);
+      await user.save();
+    }
+
+    res.status(200).json({ recipe });
   } catch (error) {
     res.status(500).json({ error });
   }
@@ -173,19 +184,26 @@ router.delete("/favorites/:userId", async (req, res) => {
 
   try {
     const recipe = await RecipeModel.findById(recipeId);
+
+    if (!recipe) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+
     recipe.isFavorite = false;
-    const newRecipe = await RecipeModel.findByIdAndUpdate(id, recipe, {
-      new: true,
-    });
+    const newRecipe = await recipe.save();
 
     const user = await UserModel.findById(req.params.userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    // remove recipe from the favoriteRecipes array
-    user.favoriteRecipes.pull(recipeId);
+
+    // Remove recipe from favorites array
+    user.favoriteRecipes = user.favoriteRecipes.filter(
+      (favoriteRecipe) => favoriteRecipe.toString() !== recipeId
+    );
     await user.save();
-    // return the updated array
+
+    // Return the updated array
     res.status(200).json({ recipe: newRecipe });
   } catch (error) {
     res.status(500).json({ error });
@@ -362,4 +380,4 @@ router.delete("/:recipeId/reviews/:reviewId", async (req, res) => {
   }
 });
 
-export { router as recipeRouter };
+export { router as recipeRouter, publicRouter as publicRecipeRouter };

@@ -14,8 +14,9 @@ import {
 } from "../user/RecipesService";
 import { CustomToast, getCurrentUserId } from "../commons/utils";
 import AddRecipe from "./../user/AddRecipe";
+import ScrollContainer from "./ScrollContainer";
 
-function RecipeContent({ isUserRecipe }) {
+function RecipeContent({ isUserRecipe, isLandingPage }) {
   const [data, setData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isFav, setIsFav] = useState(false);
@@ -32,7 +33,6 @@ function RecipeContent({ isUserRecipe }) {
       setData(newData);
       setIsFav(newData.isFavorite);
     }
-    console.log({ isOnEdit });
     if (!(isOnEdit === false)) {
       setIsEditing(isOnEdit);
     }
@@ -84,32 +84,26 @@ function RecipeContent({ isUserRecipe }) {
 
   const Content = () => {
     return (
-      <Flex
-        flexDir='column'
-        gap={4}
-        // border='1px solid green'
-        height='calc(100vh - 60px)'
-      >
-        {data && (
-          <>
-            {" "}
-            <BackButton />
-            <Box
-              p={8}
-              pt={6}
-              bgColor='#FFFAEF'
-              borderRadius={10}
-              position='relative'
-            >
-              <Flex flexDir='column' gap={5}>
-                <Flex gap={10} alignItems='center'>
-                  <Image
-                    // cursor='pointer'
-                    boxSize='150px'
-                    src={data?.imgUrl}
-                    style={{ objectFit: "cover" }}
-                    alt=''
-                  />
+      data && (
+        <>
+          <BackButton />
+          <Box
+            p={8}
+            pt={6}
+            bgColor='#FFFAEF'
+            borderRadius={10}
+            position='relative'
+          >
+            <Flex flexDir='column' gap={5}>
+              <Flex gap={10} alignItems='center'>
+                <Image
+                  // cursor='pointer'
+                  boxSize='150px'
+                  src={data?.imgUrl}
+                  style={{ objectFit: "cover" }}
+                  alt=''
+                />
+                {!isLandingPage && (
                   <Flex flexDir='column' gap={2}>
                     <Text as='b' fontSize='xl'>
                       {data?.name}
@@ -153,22 +147,42 @@ function RecipeContent({ isUserRecipe }) {
                       )}
                     </Flex>
                   </Flex>
-                </Flex>
-                {data?.description && <Text>{data.description}</Text>}
-                <DisplayList title='Ingredients' list={data?.ingredients} />
-                <DisplayList title='Instructions' list={data?.instructions} />
+                )}
               </Flex>
-            </Box>
-          </>
-        )}
-      </Flex>
+              {data?.description && <Text>{data.description}</Text>}
+              <DisplayList title='Ingredients' list={data?.ingredients} />
+              <DisplayList title='Instructions' list={data?.instructions} />
+            </Flex>
+          </Box>
+        </>
+      )
     );
   };
 
   return isEditing ? (
     <AddRecipe isEditing={isEditing} selectedRecipe={data} />
+  ) : isLandingPage ? (
+    <Flex
+      flexDir='column'
+      margin='0 auto'
+      justifySelf='center'
+      gap={4}
+      w='80%'
+      p='30px'
+    >
+      <Content />
+    </Flex>
   ) : (
-    <Content />
+    <ScrollContainer>
+      <Flex
+        flexDir='column'
+        gap={4}
+        // border='1px solid green'
+        height='calc(100vh - 60px)'
+      >
+        <Content />
+      </Flex>
+    </ScrollContainer>
   );
 }
 
