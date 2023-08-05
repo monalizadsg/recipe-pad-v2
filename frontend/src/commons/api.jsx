@@ -2,8 +2,10 @@ import axios from "axios";
 import { getToken } from "../auth/authService";
 
 const instance = axios.create({
-  // baseURL: `${import.meta.env.REACT_APP_API_URL}`,
-  baseURL: "http://localhost:3001",
+  // eslint-disable-next-line no-undef
+  baseURL: process.env.API_URL,
+  // baseURL: import.meta.env.REACT_APP_API_URL,
+  // baseURL: "http://localhost:3001",
   headers: {
     "Content-Type": "application/json",
   },
