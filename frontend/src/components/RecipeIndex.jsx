@@ -40,7 +40,7 @@ function RecipeIndex() {
   };
 
   return (
-    <VStack>
+    <VStack minH='82vh'>
       <SearchBar handleSearch={handleSearch} />
       {filteredRecipes.length > 0 ? (
         <Grid templateColumns={"repeat(4, 1fr)"} gap={50} margin={10}>

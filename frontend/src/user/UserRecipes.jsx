@@ -38,7 +38,11 @@ function UserRecipes({ data, isUserRecipe, pathName }) {
       </Flex>
       {filteredRecipes.length > 0 ? (
         <Grid templateColumns='repeat(4, 1fr)' gap={10} w='100%'>
-          {isUserRecipe && <AddRecipeCard />}
+          {isUserRecipe && (
+            <GridItem margin='0 auto'>
+              <AddRecipeCard />
+            </GridItem>
+          )}
           {filteredRecipes.map((item) => (
             <GridItem key={item._id}>
               <RecipeCard

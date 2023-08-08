@@ -244,6 +244,7 @@ function AddRecipe({ isEditing, selectedRecipe }) {
               bgColor='#FFBE73'
               _hover={{ bgColor: "#FF8900" }}
               isDisabled={isDisabled}
+              style={{ position: "absolute", bottom: 40 }}
             >
               {isEditing ? "Save" : "Add Recipe"}
             </Button>

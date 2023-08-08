@@ -37,8 +37,8 @@ function Hero() {
           </Button>
         </div>
       </Flex>
-      <Flex flex={2} justifyContent='center' p='20px'>
-        <Image src={hero} boxSize='500px' />
+      <Flex flex={3} justifyContent='center' p='20px'>
+        <Image src={hero} boxSize='700px' />
       </Flex>
     </Flex>
   );

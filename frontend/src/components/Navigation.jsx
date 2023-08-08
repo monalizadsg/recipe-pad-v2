@@ -10,7 +10,7 @@ function Navigation() {
           color: isActive ? "#ff6a6a" : "unset",
         })}
       >
-        <Text fontSize='md' fontWeight='semibold'>
+        <Text fontSize='lg' fontWeight='semibold'>
           Home
         </Text>
       </NavLink>
@@ -20,7 +20,7 @@ function Navigation() {
           color: isActive ? "#ff6a6a" : "unset",
         })}
       >
-        <Text fontSize='md' fontWeight='semibold'>
+        <Text fontSize='lg' fontWeight='semibold'>
           Recipes
         </Text>
       </NavLink>
@@ -30,7 +30,7 @@ function Navigation() {
           color: isActive ? "#ff6a6a" : "unset",
         })}
       >
-        <Text fontSize='md' fontWeight='semibold'>
+        <Text fontSize='lg' fontWeight='semibold'>
           About Us
         </Text>
       </NavLink>

@@ -44,9 +44,9 @@ function Recipes() {
           Try Out New Recipes
         </Text>
       </Flex>
-      <Flex w='80%' justifyContent='center' gap={3}>
+      <Flex w='100%' justifyContent='center' gap={10}>
         {recipeData.map((item) => (
-          <RecipeCard key={item.id} name={item.name} imgUrl={item.imgUrl} />
+          <RecipeCard key={item.id} name='' imgUrl={item.imgUrl} />
         ))}
       </Flex>
     </Flex>

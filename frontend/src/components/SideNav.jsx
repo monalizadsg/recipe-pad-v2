@@ -65,7 +65,7 @@ function SideNav() {
               <ListItem padding={4}>
                 <Flex pl={8} justifyContent='start' alignItems='center' gap={2}>
                   <Image src={icon} h='20px' w='20px' />
-                  <Text> {title}</Text>
+                  <Text fontSize='lg'> {title}</Text>
                 </Flex>
               </ListItem>
             </NavLink>

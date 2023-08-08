@@ -3,7 +3,13 @@ import SideNav from "../components/SideNav";
 
 function UserAppContainer(props) {
   return (
-    <Flex flexDir='column' h='100vh' alignItems='center'>
+    <Flex
+      flexDir='column'
+      h='100vh'
+      margin='0 auto'
+      w={{ base: "100vw", xl: "90vw" }}
+      alignItems='center'
+    >
       <Flex
         flex={1}
         // border='1px solid red'
