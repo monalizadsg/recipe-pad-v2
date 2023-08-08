@@ -178,33 +178,29 @@ router.get("/favorites/:userId", async (req, res) => {
 });
 
 // remove favorite recipe
-router.delete("/favorites/:userId", async (req, res) => {
-  const { recipeId } = req.body;
-  console.log(recipeId);
+router.delete("/favorites/:userId/:recipeId", async (req, res) => {
+  const recipeId = req.params.recipeId;
 
   try {
-    const recipe = await RecipeModel.findById(recipeId);
+    const recipe = await RecipeModel.findById(req.params.recipeId);
+    const user = await UserModel.findById(req.params.userId);
 
-    if (!recipe) {
-      return res.status(404).json({ error: "Recipe not found" });
+    if (!recipe || !user) {
+      return res.status(404).json({ error: "Recipe or user not found" });
     }
 
     recipe.isFavorite = false;
-    const newRecipe = await recipe.save();
-
-    const user = await UserModel.findById(req.params.userId);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    await recipe.save();
 
     // Remove recipe from favorites array
-    user.favoriteRecipes = user.favoriteRecipes.filter(
-      (favoriteRecipe) => favoriteRecipe.toString() !== recipeId
+    const recipeIndex = user.favoriteRecipes.findIndex(
+      (favoriteRecipe) => favoriteRecipe.toString() === recipeId
     );
+    user.favoriteRecipes.splice(recipeIndex, 1);
     await user.save();
 
     // Return the updated array
-    res.status(200).json({ recipe: newRecipe });
+    res.status(200).json({ recipe });
   } catch (error) {
     res.status(500).json({ error });
   }

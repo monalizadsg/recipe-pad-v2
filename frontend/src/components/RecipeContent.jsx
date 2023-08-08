@@ -55,9 +55,7 @@ function RecipeContent({ isUserRecipe, isLandingPage }) {
   };
 
   const handleOnSaveFavorite = async () => {
-    console.log(userId);
     const result = await saveFavoriteRecipe(recipeId, userId);
-    console.log({ result });
     if (result.status === 200) {
       addToast({
         title: "Save recipe as favorite!",
@@ -69,15 +67,12 @@ function RecipeContent({ isUserRecipe, isLandingPage }) {
   };
 
   const handleOnRemoveFavorite = async () => {
-    console.log(userId);
     const result = await deleteFavoriteRecipe(recipeId, userId);
-    console.log({ result });
     if (result.status === 200) {
       addToast({
         title: "Remove recipe as favorite!",
         type: "success",
       });
-      setData(result.data.recipe);
       setIsFav(false);
     }
   };

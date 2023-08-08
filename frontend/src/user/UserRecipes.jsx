@@ -45,7 +45,6 @@ function UserRecipes({ data, isUserRecipe, pathName }) {
                 id={item._id}
                 name={item.name}
                 imgUrl={item.imgUrl}
-                isUserRecipe
                 pathName={pathName}
               />
             </GridItem>
