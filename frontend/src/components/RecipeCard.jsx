@@ -6,14 +6,15 @@ function RecipeCard({ id, name, imgUrl, isFavorite, pathName }) {
   const navigate = useNavigate();
   return (
     <Flex
-      flexDirection='column'
-      alignItems='center'
-      mb='20px'
+      flexDirection="column"
+      alignItems="center"
+      mb="20px"
       onClick={() =>
         navigate(`/${pathName}/${name.replace(/ /g, "-")}`, {
           state: { recipeId: id },
         })
       }
+      style={{ pointerEvents: "none" }}
     >
       <Flex
         style={{
@@ -23,14 +24,14 @@ function RecipeCard({ id, name, imgUrl, isFavorite, pathName }) {
         {isFavorite && (
           <Image
             src={favorite}
-            w='30px'
-            h='30px'
+            w="30px"
+            h="30px"
             style={{ position: "absolute", right: 20, top: 20 }}
           />
         )}
         <img
           src={imgUrl}
-          alt='recipe_bowl'
+          alt="recipe_bowl"
           style={{
             width: "250px",
             height: "280px",
