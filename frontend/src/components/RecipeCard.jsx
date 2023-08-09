@@ -2,19 +2,19 @@ import { Flex, Text, Image } from "@chakra-ui/react";
 import favorite from "../assets/active_favorite.png";
 import { useNavigate } from "react-router-dom";
 
-function RecipeCard({ id, name, imgUrl, isFavorite, pathName }) {
+function RecipeCard({ id, name, imgUrl, isFavorite, pathName, isDisabled }) {
   const navigate = useNavigate();
   return (
     <Flex
-      flexDirection="column"
-      alignItems="center"
-      mb="20px"
+      flexDirection='column'
+      alignItems='center'
+      mb='20px'
       onClick={() =>
         navigate(`/${pathName}/${name.replace(/ /g, "-")}`, {
           state: { recipeId: id },
         })
       }
-      style={{ pointerEvents: "none" }}
+      style={{ pointerEvents: isDisabled ? "none" : "unset" }}
     >
       <Flex
         style={{
@@ -24,14 +24,14 @@ function RecipeCard({ id, name, imgUrl, isFavorite, pathName }) {
         {isFavorite && (
           <Image
             src={favorite}
-            w="30px"
-            h="30px"
+            w='30px'
+            h='30px'
             style={{ position: "absolute", right: 20, top: 20 }}
           />
         )}
         <img
           src={imgUrl}
-          alt="recipe_bowl"
+          alt='recipe_bowl'
           style={{
             width: "250px",
             height: "280px",

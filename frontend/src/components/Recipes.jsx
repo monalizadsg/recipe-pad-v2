@@ -46,7 +46,7 @@ function Recipes() {
       </Flex>
       <Flex w='100%' justifyContent='center' gap={10}>
         {recipeData.map((item) => (
-          <RecipeCard key={item.id} name='' imgUrl={item.imgUrl} />
+          <RecipeCard key={item.id} name='' imgUrl={item.imgUrl} isDisabled />
         ))}
       </Flex>
     </Flex>
