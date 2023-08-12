@@ -12,23 +12,22 @@ function Header() {
 
   return (
     <Flex
-      justifyContent="center"
-      alignItems="center"
-      bgColor="#FAECED"
-      p="20px"
+      justifyContent='center'
+      alignItems='center'
+      bgColor='#FAECED'
+      p='20px'
     >
-      <Flex w="80%" justifyContent="space-between" alignItems="center">
+      <Flex w='80%' justifyContent='space-between' alignItems='center'>
         <Logo />
         <Navigation />
-        <Flex flex={1} justifyContent="flex-end">
-          {console.log(userAuthenticated)}
+        <Flex flex={1} justifyContent='flex-end'>
           {userAuthenticated ? (
             <ProfileMenu />
           ) : (
             <Button
-              color="#fff"
-              bgColor="#FE7071"
-              p="0 30px"
+              color='#fff'
+              bgColor='#FE7071'
+              p='0 30px'
               borderRadius={30}
               _hover={{ opacity: 0.8 }}
               onClick={() => navigate("/login")}

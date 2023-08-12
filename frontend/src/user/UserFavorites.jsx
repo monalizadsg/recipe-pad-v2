@@ -14,7 +14,6 @@ function UserFavorites() {
     const fetchRecipeData = async () => {
       setIsLoading(true);
       const recipeData = await getFavoriteRecipes(userId);
-      console.log({ recipeData });
       if (recipeData) {
         setRecipes(recipeData.data.favoriteRecipes);
         setIsLoading(false);

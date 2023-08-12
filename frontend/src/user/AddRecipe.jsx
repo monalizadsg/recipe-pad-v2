@@ -83,7 +83,6 @@ function AddRecipe({ isEditing, selectedRecipe }) {
       const result = await upsertPromise;
       if (result.status === 200 || result.status === 201) {
         if (isEditing) {
-          console.log({ result });
           addToast({
             title: "Recipe updated!",
             type: "success",

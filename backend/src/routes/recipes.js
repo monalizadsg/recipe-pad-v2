@@ -133,7 +133,6 @@ router.delete("/:id", async (req, res) => {
 // save a favorite recipe
 router.put("/favorites/:userId", async (req, res) => {
   const recipeId = req.body.recipeId;
-  console.log(recipeId);
 
   try {
     const recipe = await RecipeModel.findById(recipeId);
